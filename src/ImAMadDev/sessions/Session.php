@@ -3,13 +3,15 @@
 namespace ImAMadDev\sessions;
 
 use ImAMadDev\CountdownMaster;
+use ImAMadDev\countdowns\Countdown;
+use pocketmine\player\Player;
 
 class Session{
 
     private array $countdowns = [];
 
-    public function __construct(private SessionInterface $information){
-    }
+    public function __construct(
+        private SessionInterface $information){}
 
     public function getDb() : SessionInterface {
         return $this->information;
@@ -20,9 +22,12 @@ class Session{
         return $name == $this->information->getIdentifier();
     }
 
-    public function addCountdown(string $name, int $time) : void
+    public function addCountdown(Countdown $countdown) : void
     {
-        $this->countdowns[$name] = $time;
+        $this->countdowns[$countdown->getName()] = $countdown->getTime();
+        if ($countdown->isStorable()){
+            $this->getDb()->add($countdown->getName(), $countdown->getTime());
+        }
     }
 
     public function hasCountdown(string $name) : bool
@@ -45,9 +50,11 @@ class Session{
          foreach ($this->countdowns as $name => $countdown) {
              if ($this->countdowns[$name] < 1){
                  unset($this->countdowns[$name]);
+                 $this->information->update($name, 0);
                  continue;
              }
              $this->countdowns[$name] = $countdown -= 1;
+             $this->information->update($name, $this->countdowns[$name]);
          }
     }
 

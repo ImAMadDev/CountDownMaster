@@ -15,12 +15,14 @@ class EnderPearlCountdown extends Countdown {
         parent::__construct("EnderPearl", 15, false);
     }
 
-    public function onActivate(Player $player, Event $event) : void {
+    public function onUse(Player $player, Event $event) : void
+    {
         if ($event instanceof PlayerItemUseEvent) {
             $item = $event->getItem();
             if ($item->getId() == ItemIds::ENDER_PEARL) {
-                $player->sendMessage("You have used ender pearl");
-                CountdownMaster::getInstance()->getSession($player->getName())?->addCountdown($this->getName(), $this->getDefaultTime());
+                $this->onActivate($player, function (Player $player) {
+                    $player->sendMessage("Closure llamado");
+                });
             }
         }
     }

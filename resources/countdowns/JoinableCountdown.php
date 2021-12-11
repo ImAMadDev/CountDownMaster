@@ -14,10 +14,12 @@ class JoinableCountdown extends Countdown {
         parent::__construct("Joinable", 15, false);
     }
 
-    public function onActivate(Player $player, Event $event) : void {
+    public function onUse(Player $player, Event $event) : void
+    {
         if ($event instanceof PlayerJoinEvent) {
-            $player->sendMessage("You have used ender pearl");
-            CountdownMaster::getInstance()->getSession($player->getName())?->addCountdown($this->getName(), $this->getDefaultTime());
+            $this->onActivate($player, function (Player $player){
+                $player->sendMessage("Closure llamado");
+            });
         }
     }
 }

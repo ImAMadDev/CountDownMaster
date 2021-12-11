@@ -2,20 +2,23 @@
 
 namespace ImAMadDev\countdowns;
 
+use Closure;
+use ImAMadDev\CountdownMaster;
 use pocketmine\event\Event;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 
 abstract class Countdown
 {
 
     /**
      * @param string $name
-     * @param int $defaultTime
+     * @param int $time
      * @param bool $storable
      */
     public function __construct(
         public string $name,
-        private int $defaultTime,
+        private int $time,
         private bool $storable = true)
     {
     }
@@ -31,9 +34,9 @@ abstract class Countdown
     /**
      * @return int
      */
-    public function getDefaultTime(): int
+    public function getTime(): int
     {
-        return $this->defaultTime;
+        return $this->time;
     }
 
     /**
@@ -44,6 +47,16 @@ abstract class Countdown
         return $this->storable;
     }
 
-    abstract public function onActivate(Player $player, Event $event) : void;
+    public function onActivate(Player $player, ?Closure $closure = null) : void
+    {
+        $player->sendMessage("You have been joined to the " . $this->getName() . " countdown!");
+        if($closure !== null){
+            Utils::validateCallableSignature(function(Player $player){}, $closure);
+            ($closure)($player);
+        }
+        CountdownMaster::getInstance()->getSession($player->getName())?->addCountdown($this);
+    }
+
+    abstract public function onUse(Player $player, Event $event) : void;
 
 }

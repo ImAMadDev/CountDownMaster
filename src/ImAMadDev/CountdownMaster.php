@@ -80,7 +80,7 @@ class CountdownMaster extends PluginBase implements Listener{
             $this->openSession(new Session(new SessionInterface(["identifier" => $event->getPlayer()->getName(), "countdowns" => []])));
         }
         foreach (CountdownManager::getInstance()->getCountdowns() as $countdown) {
-            $countdown->onActivate($event->getPlayer(), $event);
+            $countdown->onUse($event->getPlayer(), $event);
         }
     }
     
@@ -91,7 +91,7 @@ class CountdownMaster extends PluginBase implements Listener{
                 $event->cancel();
                 continue;
             }
-            $countdown->onActivate($event->getPlayer(), $event);
+            $countdown->onUse($event->getPlayer(), $event);
         }
     }
 
@@ -104,7 +104,7 @@ class CountdownMaster extends PluginBase implements Listener{
                 $event->getPlayer()->sendMessage("You have a countdown off: " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
                 continue;
             }
-            $countdown->onActivate($event->getPlayer(), $event);
+            $countdown->onUse($event->getPlayer(), $event);
         }
     }
 }

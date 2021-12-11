@@ -14,10 +14,12 @@ class ChatCountdown extends Countdown {
         parent::__construct("Chat", 15, false);
     }
 
-    public function onActivate(Player $player, Event $event) : void {
+    public function onUse(Player $player, Event $event) : void
+    {
         if ($event instanceof PlayerChatEvent) {
-            $player->sendMessage("You have joined to chat countdown");
-            CountdownMaster::getInstance()->getSession($player->getName())?->addCountdown($this->getName(), $this->getDefaultTime());
+            $this->onActivate($player, function (Player $player){
+                $player->sendMessage("Closure llamado");
+            });
         }
     }
 }
