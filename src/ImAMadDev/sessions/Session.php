@@ -4,7 +4,6 @@ namespace ImAMadDev\sessions;
 
 use ImAMadDev\CountdownMaster;
 use ImAMadDev\countdowns\Countdown;
-use pocketmine\player\Player;
 
 class Session{
 

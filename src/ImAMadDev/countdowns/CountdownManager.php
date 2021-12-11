@@ -23,6 +23,7 @@ class CountdownManager {
         return self::$instance;
     }
 
+    # Special thanks to Ad5001 code was inspired by https://github.com/Ad5001/UHC
     public function init() : void
     {
         $files = array_diff(scandir(CountdownMaster::getInstance()->getDataFolder() . "countdowns"), [".", ".."]);
@@ -31,10 +32,8 @@ class CountdownManager {
                 require_once(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file);
                 $classn = $this->getClasses(file_get_contents(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file));
                 $this->addCountdown(new $classn());
-                //self::$countdowns[explode("\\", $classn)[count(explode("\\", $classn)) - 1]] = new $classn();
             }
         }
-        var_dump(self::$countdowns);
     }
 
     public function getClasses(string $file) : mixed {
