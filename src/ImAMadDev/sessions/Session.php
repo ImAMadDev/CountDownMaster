@@ -3,7 +3,6 @@
 namespace ImAMadDev\sessions;
 
 use ImAMadDev\CountdownMaster;
-use ImAMadDev\countdowns\CountdownManager;
 
 class Session{
 
@@ -26,10 +25,29 @@ class Session{
         $this->countdowns[$name] = $time;
     }
 
+    public function hasCountdown(string $name) : bool
+    {
+        if (!isset($this->countdowns[$name])){
+            return false;
+        } elseif ($this->countdowns[$name] < 1){
+            return false;
+        }
+        return true;
+    }
+
+    public function getCountdown(string $name) : int
+    {
+        return $this->countdowns[$name] ?? 0;
+    }
+
     public function onTick() : void
     {
-         foreach ($this->countdowns as $countdown) {
-             $countdown--;
+         foreach ($this->countdowns as $name => $countdown) {
+             if ($this->countdowns[$name] < 1){
+                 unset($this->countdowns[$name]);
+                 continue;
+             }
+             $this->countdowns[$name] = $countdown -= 1;
          }
     }
 
@@ -40,6 +58,6 @@ class Session{
 
     public function __destruct()
     {
-        file_put_contents(CountdownMaster::getInstance()->getDataFolder() . DIRECTORY_SEPARATOR . 'players' . DIRECTORY_SEPARATOR . $this->information->getIdentifier() . '.json', JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
+        file_put_contents(CountdownMaster::getInstance()->getDataFolder() . DIRECTORY_SEPARATOR . 'players' . DIRECTORY_SEPARATOR . $this->information->getIdentifier() . '.json', json_encode($this->getDb()->getInformation(), JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
     }
 }

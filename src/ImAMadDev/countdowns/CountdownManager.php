@@ -3,15 +3,24 @@
 namespace ImAMadDev\countdowns;
 
 use ImAMadDev\CountdownMaster;
-use pocketmine\utils\SingletonTrait;
 
 class CountdownManager {
-    use SingletonTrait;
 
     private static array $countdowns = [];
 
+    private static self $instance;
+
     public function __construct(){
+        self::$instance = $this;
         $this->init();
+    }
+
+    /**
+     * @return CountdownManager
+     */
+    public static function getInstance(): CountdownManager
+    {
+        return self::$instance;
     }
 
     public function init() : void
@@ -19,13 +28,15 @@ class CountdownManager {
         $files = array_diff(scandir(CountdownMaster::getInstance()->getDataFolder() . "countdowns"), [".", ".."]);
         foreach ($files as $file) {
             if(!is_dir(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file)) {
-                require(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file);
+                require_once(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file);
                 $classn = $this->getClasses(file_get_contents(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file));
-                self::$countdowns[explode("\\", $classn)[count(explode("\\", $classn)) - 1]] = $classn;
-                @mkdir(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . explode("\\", $classn)[count(explode("\\", $classn)) - 1]);
+                $this->addCountdown(new $classn());
+                //self::$countdowns[explode("\\", $classn)[count(explode("\\", $classn)) - 1]] = new $classn();
             }
         }
+        var_dump(self::$countdowns);
     }
+
     public function getClasses(string $file) : mixed {
         $tokens = token_get_all($file);
         $class_token = false;
@@ -48,6 +59,7 @@ class CountdownManager {
 
     public function addCountdown(Countdown $countdown) : void
     {
+        if (array_key_exists($countdown->getName(), self::$countdowns)) return;
         self::$countdowns[$countdown->getName()] = $countdown;
     }
 }

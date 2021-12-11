@@ -13,7 +13,7 @@ class Files {
     public function __construct()
     {
         foreach (glob(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . '*.json') as $file) {
-            $contents = json_decode(file_get_contents(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . basename($file, '.json') . '.json'), true);
+            $contents = json_decode(file_get_contents($file), true);
             CountdownMaster::getInstance()->openSession(new Session(new SessionInterface($contents)));
         }
     }
@@ -26,9 +26,9 @@ class Files {
     public function openFile(string $player) : void
     {
         $file = fopen(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . $player . '.json', "w+");
-        $data = ["identifier" => $player, "countdowns" => []];
-        fwrite($file, json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
         fclose($file);
+        $data = ["identifier" => $player, "countdowns" => []];
+        file_put_contents(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . $player . '.json', json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
     }
 }
 
