@@ -1,6 +1,6 @@
 <?php
 
-namespace ImAMadDev\session;
+namespace ImAMadDev\sessions;
 
 final class SessionInterface {
 
@@ -8,7 +8,7 @@ final class SessionInterface {
         private array $information){
     }
 
-    public function getIndetifier() : string
+    public function getIdentifier() : string
     {
         return $this->information['identifier'];
     }

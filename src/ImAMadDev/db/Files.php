@@ -3,28 +3,29 @@
 namespace ImAMadDev\db;
 
 use ImAMadDev\CountdownMaster;
-use ImAMadDev\session\SessionInterface;
+use ImAMadDev\sessions\SessionInterface;
 use ImAMadDev\sessions\Session;
+use JetBrains\PhpStorm\Pure;
+
 
 class Files {
 
-
     public function __construct()
     {
-        foreach (glob(PLAYER_FILES . '*.json') as $file) {
-            $contents = json_decode(file_get_contents(PLAYER_FILES . basename($file, '.json') . '.json'), true);
-            CountdownMaster::getInstance()->openSession(new Session(new SessionInterface([])));
+        foreach (glob(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . '*.json') as $file) {
+            $contents = json_decode(file_get_contents(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . basename($file, '.json') . '.json'), true);
+            CountdownMaster::getInstance()->openSession(new Session(new SessionInterface($contents)));
         }
     }
 
-    public function hasFile(string $player) : bool
+    #[Pure] public function hasFile(string $player) : bool
     {
-        return file_exists(PLAYER_FILES . $player . '.json');
+        return file_exists(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . $player . '.json');
     }
 
     public function openFile(string $player) : void
     {
-        $file = fopen(PLAYER_FILES . $player . '.json', "w+");
+        $file = fopen(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . $player . '.json', "w+");
         $data = ["identifier" => $player, "countdowns" => []];
         fwrite($file, json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
         fclose($file);
