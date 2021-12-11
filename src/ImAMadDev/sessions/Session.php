@@ -58,6 +58,6 @@ class Session{
 
     public function __destruct()
     {
-        file_put_contents(CountdownMaster::getInstance()->getDataFolder() . DIRECTORY_SEPARATOR . 'players' . DIRECTORY_SEPARATOR . $this->information->getIdentifier() . '.json', json_encode($this->getDb()->getInformation(), JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
+        file_put_contents(CountdownMaster::getInstance()->getDataFolder() . 'players' . DIRECTORY_SEPARATOR . $this->information->getIdentifier() . '.json', json_encode($this->getDb()->getInformation(), JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
     }
 }
