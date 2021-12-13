@@ -30,8 +30,8 @@ class CountdownManager {
         foreach ($files as $file) {
             if(!is_dir(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file)) {
                 require_once(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file);
-                $classn = $this->getClasses(file_get_contents(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file));
-                $this->addCountdown(new $classn());
+                $class_name = $this->getClasses(file_get_contents(CountdownMaster::getInstance()->getDataFolder() . "countdowns/" . $file));
+                $this->addCountdown(new $class_name());
             }
         }
     }
