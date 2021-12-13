@@ -11,7 +11,7 @@ class ChatCountdown extends Countdown {
 
     #[Pure] public function __construct()
     {
-        parent::__construct("Chat", 15, false);
+        parent::__construct("Chat", 15, PlayerChatEvent::class, false);
     }
 
     /**

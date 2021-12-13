@@ -1,25 +1,27 @@
 <?php
 
-use ImAMadDev\CountdownMaster;
 use ImAMadDev\countdowns\Countdown;
 use JetBrains\PhpStorm\Pure;
 use pocketmine\event\Event;
-use pocketmine\event\player\PlayerItemUseEvent;
-use pocketmine\item\ItemIds;
+use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\player\Player;
 
-class EnderPearlCountdown extends Countdown {
+class CommandCountdown extends Countdown {
 
     #[Pure] public function __construct()
     {
-        parent::__construct("EnderPearl", 15, PlayerItemUseEvent::class, false);
+        parent::__construct("Command", 15, PlayerCommandPreprocessEvent::class, false);
     }
 
+    /**
+     * @param Player $player
+     * @param Event $event
+     * @return void
+     */
     public function onUse(Player $player, Event $event) : void
     {
-        if ($event instanceof PlayerItemUseEvent) {
-            $item = $event->getItem();
-            if ($item->getId() == ItemIds::ENDER_PEARL) {
+        if ($event instanceof PlayerCommandPreprocessEvent) {
+            if ($event->getMessage() == "/help") {
                 $this->onActivate($player, function (Player $player) {
                     $player->sendMessage("Closure llamado");
                 });

@@ -11,7 +11,7 @@ class JoinableCountdown extends Countdown {
 
     #[Pure] public function __construct()
     {
-        parent::__construct("Joinable", 15, false);
+        parent::__construct("Joinable", 15, PlayerJoinEvent::class, false);
     }
 
     public function onUse(Player $player, Event $event) : void

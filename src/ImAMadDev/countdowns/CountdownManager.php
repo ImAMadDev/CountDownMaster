@@ -61,4 +61,15 @@ class CountdownManager {
         if (array_key_exists($countdown->getName(), self::$countdowns)) return;
         self::$countdowns[$countdown->getName()] = $countdown;
     }
+
+    public function getCountdownByEvent(string $class) : array
+    {
+        $countdowns = [];
+        foreach (self::$countdowns as $countdown) {
+            if ($countdown->getClass() == $class){
+                $countdowns[] = $countdown;
+            }
+        }
+        return $countdowns;
+    }
 }

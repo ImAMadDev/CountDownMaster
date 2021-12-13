@@ -11,7 +11,7 @@ class JumpCountdown extends Countdown {
 
     #[Pure] public function __construct()
     {
-            parent::__construct("Jump", 5, false);
+            parent::__construct("Jump", 5, PlayerJumpEvent::class, false);
     }
 
     /**

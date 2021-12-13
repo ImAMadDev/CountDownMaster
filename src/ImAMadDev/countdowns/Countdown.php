@@ -14,11 +14,13 @@ abstract class Countdown
     /**
      * @param string $name
      * @param int $time
+     * @param string $class
      * @param bool $storable
      */
     public function __construct(
         public string $name,
         private int $time,
+        private string $class,
         private bool $storable = true)
     {
     }
@@ -40,6 +42,14 @@ abstract class Countdown
     }
 
     /**
+     * @return string
+     */
+    public function getClass(): string
+    {
+        return $this->class;
+    }
+
+    /**
      * @return bool
      */
     public function isStorable(): bool
@@ -58,5 +68,6 @@ abstract class Countdown
     }
 
     abstract public function onUse(Player $player, Event $event) : void;
+
 
 }

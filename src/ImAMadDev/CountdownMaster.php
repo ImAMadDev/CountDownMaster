@@ -9,6 +9,7 @@ use ImAMadDev\sessions\SessionInterface;
 use ImAMadDev\sessions\Session;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
+use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
@@ -79,14 +80,14 @@ class CountdownMaster extends PluginBase implements Listener{
             self::$files->openFile($event->getPlayer()->getName());
             $this->openSession(new Session(new SessionInterface(["identifier" => $event->getPlayer()->getName(), "countdowns" => []])));
         }
-        foreach (CountdownManager::getInstance()->getCountdowns() as $countdown) {
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerJoinEvent::class) as $countdown) {
             $countdown->onUse($event->getPlayer(), $event);
         }
     }
     
     public function onItemUseEvent(PlayerItemUseEvent $event) : void {
         if ($event->isCancelled()) return;
-        foreach (CountdownManager::getInstance()->getCountdowns() as $countdown) {
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerItemUseEvent::class) as $countdown) {
             if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
                 $event->cancel();
                 continue;
@@ -98,7 +99,20 @@ class CountdownMaster extends PluginBase implements Listener{
     public function onChat(PlayerChatEvent $event) : void
     {
         if ($event->isCancelled()) return;
-        foreach (CountdownManager::getInstance()->getCountdowns() as $countdown) {
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerChatEvent::class) as $countdown) {
+            if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
+                $event->cancel();
+                $event->getPlayer()->sendMessage("You have a countdown off: " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+                continue;
+            }
+            $countdown->onUse($event->getPlayer(), $event);
+        }
+    }
+
+    public function onCommandUse(PlayerCommandPreprocessEvent $event) : void
+    {
+        if ($event->isCancelled()) return;
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerCommandPreprocessEvent::class) as $countdown) {
             if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
                 $event->cancel();
                 $event->getPlayer()->sendMessage("You have a countdown off: " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
