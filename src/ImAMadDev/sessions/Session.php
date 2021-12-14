@@ -50,6 +50,7 @@ class Session{
              if ($this->countdowns[$name] < 1){
                  unset($this->countdowns[$name]);
                  $this->information->update($name, 0);
+                 $this->getDb()->getPlayer()?->sendMessage("Your " . $name . " countdown has expired!");
                  continue;
              }
              $this->countdowns[$name] = $countdown -= 1;

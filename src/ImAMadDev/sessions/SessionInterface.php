@@ -2,6 +2,9 @@
 
 namespace ImAMadDev\sessions;
 
+use pocketmine\player\Player;
+use pocketmine\Server;
+
 final class SessionInterface {
 
     public function __construct(
@@ -11,6 +14,11 @@ final class SessionInterface {
     public function getIdentifier() : string
     {
         return $this->information['identifier'];
+    }
+
+    public function getPlayer() : ?Player
+    {
+        return Server::getInstance()->getPlayerByPrefix($this->getIdentifier());
     }
 
     public function getInformation() : array
