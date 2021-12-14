@@ -3,6 +3,7 @@
 namespace ImAMadDev\countdowns;
 
 use ImAMadDev\CountdownMaster;
+use pocketmine\utils\TextFormat;
 
 class CountdownManager {
 
@@ -34,6 +35,7 @@ class CountdownManager {
                 $this->addCountdown(new $class_name());
             }
         }
+        CountdownMaster::getInstance()->getLogger()->info(TextFormat::GREEN . "A total of " . TextFormat::DARK_PURPLE . count($this->getCountdowns()) . TextFormat::GREEN . " countdowns have been loaded.");
     }
 
     public function getClasses(string $file) : mixed {

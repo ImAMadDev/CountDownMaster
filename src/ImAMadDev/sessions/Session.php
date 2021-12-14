@@ -4,6 +4,9 @@ namespace ImAMadDev\sessions;
 
 use ImAMadDev\CountdownMaster;
 use ImAMadDev\countdowns\Countdown;
+use pocketmine\player\Player;
+use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 class Session{
 
@@ -14,6 +17,11 @@ class Session{
 
     public function getDb() : SessionInterface {
         return $this->information;
+    }
+
+    public function getPlayer() : ?Player
+    {
+        return Server::getInstance()->getPlayerByPrefix($this->getDb()->getIdentifier());
     }
 
     public function compare(string $name) : bool
@@ -50,7 +58,7 @@ class Session{
              if ($this->countdowns[$name] < 1){
                  unset($this->countdowns[$name]);
                  $this->information->update($name, 0);
-                 $this->getDb()->getPlayer()?->sendMessage("Your " . $name . " countdown has expired!");
+                 $this->getPlayer()?->sendMessage(TextFormat::GREEN . "Your " . TextFormat::GOLD . $name . TextFormat::GREEN . " countdown has expired!");
                  continue;
              }
              $this->countdowns[$name] = $countdown -= 1;

@@ -10,7 +10,7 @@ class CombatTagCountdown extends Countdown {
 
     public function __construct()
     {
-        parent::__construct("CombatTag", 15, EntityDamageEvent::class, false);
+        parent::__construct("CombatTag", 15, EntityDamageByEntityEvent::class, false);
         $this->setClosure(function (Player $player){
             $player->sendMessage("Closure called!");
         });
@@ -19,15 +19,12 @@ class CombatTagCountdown extends Countdown {
 
     public function onActivate(Player $player, Event $event): void
     {
-        if ($event instanceof EntityDamageByEntityEvent){
-            $entity = $event->getEntity();
-            $attacker = $event->getDamager();
-            if ($entity instanceof Player and $attacker instanceof Player){
-                if (hash_equals(spl_object_hash($entity), spl_object_hash($attacker))){
-                    parent::onActivate($player, $event);
-                }
-            }
-        }
+        if (!$event instanceof EntityDamageByEntityEvent) return;
+        $entity = $event->getEntity();
+        $attacker = $event->getDamager();
+        if (!$entity instanceof Player and !$attacker instanceof Player) return;
+        if (hash_equals(spl_object_hash($entity), spl_object_hash($attacker))) return;
+        parent::onActivate($player, $event);
     }
 
 }

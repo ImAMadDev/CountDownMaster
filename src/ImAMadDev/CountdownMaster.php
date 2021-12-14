@@ -14,6 +14,7 @@ use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
+use pocketmine\utils\TextFormat;
 
 class CountdownMaster extends PluginBase implements Listener{
 
@@ -92,7 +93,7 @@ class CountdownMaster extends PluginBase implements Listener{
             if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
                 if ($countdown->isCancelEvent()) {
                     $event->cancel();
-                    $event->getPlayer()->sendMessage("You have a countdown off: " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+                    $event->getPlayer()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
 
                 }
                 continue;
@@ -108,7 +109,7 @@ class CountdownMaster extends PluginBase implements Listener{
             if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
                 if ($countdown->isCancelEvent()) {
                     $event->cancel();
-                    $event->getPlayer()->sendMessage("You have a countdown off: " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+                    $event->getPlayer()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
                 }
                 continue;
             }
@@ -119,26 +120,28 @@ class CountdownMaster extends PluginBase implements Listener{
     public function onCommandUse(PlayerCommandPreprocessEvent $event) : void
     {
         if ($event->isCancelled()) return;
-        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerCommandPreprocessEvent::class) as $countdown) {
-            if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
-                if ($countdown->isCancelEvent()) {
-                    $event->cancel();
-                    $event->getPlayer()->sendMessage("You have a countdown off: " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+        if (str_starts_with($event->getMessage(), "/") or str_starts_with($event->getMessage(), "./")) {
+            foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerCommandPreprocessEvent::class) as $countdown) {
+                if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())) {
+                    if ($countdown->isCancelEvent()) {
+                        $event->cancel();
+                        $event->getPlayer()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+                    }
+                    continue;
                 }
-                continue;
+                $countdown->onActivate($event->getPlayer(), $event);
             }
-            $countdown->onActivate($event->getPlayer(), $event);
         }
     }
 
     public function onEntityDamage(EntityDamageEvent $event) : void
     {
         if ($event->isCancelled()) return;
-        foreach (CountdownManager::getInstance()->getCountdownByEvent($event::class) as $countdown) {
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
             if ($this->getSession($event->getEntity()->getName())?->hasCountdown($countdown->getName())){
                 if ($countdown->isCancelEvent()) {
                     $event->cancel();
-                    $event->getEntity()->sendMessage("You have a countdown off: " . $this->getSession($event->getEntity()->getName())?->getCountdown($countdown->getName()));
+                    $event->getEntity()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getEntity()->getName())?->getCountdown($countdown->getName()));
                 }
                 continue;
             }

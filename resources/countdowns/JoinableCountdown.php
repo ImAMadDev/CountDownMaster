@@ -9,7 +9,7 @@ class JoinableCountdown extends Countdown {
 
     public function __construct()
     {
-        parent::__construct("Joinable", 15, PlayerJoinEvent::class, false);
+        parent::__construct("Joinable", 5, PlayerJoinEvent::class, false);
         $this->setClosure(function (Player $player){
             $player->sendMessage("Closure called!");
         });
