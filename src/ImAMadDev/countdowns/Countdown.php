@@ -11,6 +11,7 @@ use ImAMadDev\countdowns\utils\ExtraData;
 use ImAMadDev\countdowns\utils\ExtraDataType;
 use pocketmine\event\Event;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 
 abstract class Countdown
@@ -76,7 +77,7 @@ abstract class Countdown
     public function onActivate(Player $player, Event $event) : void
     {
         if (!$this->canExecute($event)) return;
-        $player->sendMessage("You have been joined to the " . $this->getName() . " countdown!");
+        $player->sendMessage(TextFormat::RED . "You have entered the " . TextFormat::GOLD . $this->getName() . TextFormat::RED . " countdown for " . gmdate('i:s', $this->getTime()));
         if($this->getClosure() !== null){
             Utils::validateCallableSignature(function(Player $player){}, $this->getClosure());
             ($this->getClosure())($player);
