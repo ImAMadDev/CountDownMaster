@@ -123,7 +123,7 @@ class CountdownMaster extends PluginBase implements Listener{
         if (str_starts_with($event->getMessage(), "/") or str_starts_with($event->getMessage(), "./")) {
             foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerCommandPreprocessEvent::class) as $countdown) {
                 if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())) {
-                    if ($countdown->isCancelEvent()) {
+                    if ($countdown->isCancelEvent() and $countdown->canExecute($event)) {
                         $event->cancel();
                         $event->getPlayer()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
                     }

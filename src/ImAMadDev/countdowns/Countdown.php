@@ -4,6 +4,11 @@ namespace ImAMadDev\countdowns;
 
 use Closure;
 use ImAMadDev\CountdownMaster;
+use ImAMadDev\countdowns\types\BlockProperty;
+use ImAMadDev\countdowns\types\CommandProperty;
+use ImAMadDev\countdowns\types\ItemProperty;
+use ImAMadDev\countdowns\utils\ExtraData;
+use ImAMadDev\countdowns\utils\ExtraDataType;
 use pocketmine\event\Event;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
@@ -14,6 +19,8 @@ abstract class Countdown
     private ?Closure $closure;
 
     private bool $cancelEvent = true;
+
+    private ?array $extraData = [];
 
     /**
      * @param string $name
@@ -68,12 +75,37 @@ abstract class Countdown
      */
     public function onActivate(Player $player, Event $event) : void
     {
+        if (!$this->canExecute($event)) return;
         $player->sendMessage("You have been joined to the " . $this->getName() . " countdown!");
         if($this->getClosure() !== null){
             Utils::validateCallableSignature(function(Player $player){}, $this->getClosure());
             ($this->getClosure())($player);
         }
         CountdownMaster::getInstance()->getSession($player->getName())?->addCountdown($this);
+    }
+
+    public function canExecute(Event $event) : bool
+    {
+        if (empty($this->extraData)) return true;
+        if (isset($this->extraData[ExtraDataType::ITEM_PROPERTY])){
+            $property = $this->extraData[ExtraDataType::ITEM_PROPERTY];
+            if ($property instanceof ItemProperty){
+                return ($property->equal($event->getItem()));
+            }
+        }
+        if (isset($this->extraData[ExtraDataType::BLOCK_PROPERTY])){
+            $property = $this->extraData[ExtraDataType::BLOCK_PROPERTY];
+            if ($property instanceof BlockProperty){
+                return ($property->equal($event->getBlock()));
+            }
+        }
+        if (isset($this->extraData[ExtraDataType::COMMAND_PROPERTY])){
+            $property = $this->extraData[ExtraDataType::COMMAND_PROPERTY];
+            if ($property instanceof CommandProperty){
+                return ($property->equal($event->getMessage()));
+            }
+        }
+        return false;
     }
 
     /**
@@ -106,6 +138,23 @@ abstract class Countdown
     public function setCancelEvent(bool $cancelEvent): void
     {
         $this->cancelEvent = $cancelEvent;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getExtraData(): ?array
+    {
+        return $this->extraData;
+    }
+
+    /**
+     * @param string $extraDataType
+     * @param ExtraData $extraData
+     */
+    public function addExtraData(string $extraDataType, ExtraData $extraData): void
+    {
+        $this->extraData[$extraDataType] = $extraData;
     }
 
 

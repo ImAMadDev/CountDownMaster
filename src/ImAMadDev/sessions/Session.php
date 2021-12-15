@@ -61,7 +61,7 @@ class Session{
                  $this->getPlayer()?->sendMessage(TextFormat::GREEN . "Your " . TextFormat::GOLD . $name . TextFormat::GREEN . " countdown has expired!");
                  continue;
              }
-             $this->countdowns[$name] = $countdown -= 1;
+             $this->countdowns[$name] -= 1;
              $this->information->update($name, $this->countdowns[$name]);
          }
     }

@@ -1,9 +1,12 @@
 <?php
 
 use ImAMadDev\countdowns\Countdown;
+use ImAMadDev\countdowns\types\ItemProperty;
+use ImAMadDev\countdowns\utils\ExtraDataType;
 use pocketmine\event\Event;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 
 class EnderPearlCountdown extends Countdown {
@@ -15,6 +18,7 @@ class EnderPearlCountdown extends Countdown {
             $player->sendMessage("Closure called!");
         });
         $this->setCancelEvent(true);
+        $this->addExtraData(ExtraDataType::ITEM_PROPERTY, new ItemProperty(VanillaItems::ENDER_PEARL()));
     }
 
     public function onActivate(Player $player, Event $event): void
