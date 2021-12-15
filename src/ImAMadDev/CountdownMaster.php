@@ -7,10 +7,13 @@ use ImAMadDev\db\Files;
 use ImAMadDev\scheduler\SessionTick;
 use ImAMadDev\sessions\SessionInterface;
 use ImAMadDev\sessions\Session;
+use pocketmine\event\block\BlockBreakEvent;
+use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
@@ -82,14 +85,14 @@ class CountdownMaster extends PluginBase implements Listener{
             self::$files->openFile($event->getPlayer()->getName());
             $this->openSession(new Session(new SessionInterface(["identifier" => $event->getPlayer()->getName(), "countdowns" => []])));
         }
-        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerJoinEvent::class) as $countdown) {
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
             $countdown->onActivate($event->getPlayer(), $event);
         }
     }
     
     public function onItemUseEvent(PlayerItemUseEvent $event) : void {
         if ($event->isCancelled()) return;
-        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerItemUseEvent::class) as $countdown) {
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
             if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
                 if ($countdown->isCancelEvent()) {
                     $event->cancel();
@@ -105,7 +108,7 @@ class CountdownMaster extends PluginBase implements Listener{
     public function onChat(PlayerChatEvent $event) : void
     {
         if ($event->isCancelled()) return;
-        foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerChatEvent::class) as $countdown) {
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
             if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
                 if ($countdown->isCancelEvent()) {
                     $event->cancel();
@@ -121,7 +124,7 @@ class CountdownMaster extends PluginBase implements Listener{
     {
         if ($event->isCancelled()) return;
         if (str_starts_with($event->getMessage(), "/") or str_starts_with($event->getMessage(), "./")) {
-            foreach (CountdownManager::getInstance()->getCountdownByEvent(PlayerCommandPreprocessEvent::class) as $countdown) {
+            foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
                 if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())) {
                     if ($countdown->isCancelEvent() and $countdown->canExecute($event)) {
                         $event->cancel();
@@ -146,6 +149,51 @@ class CountdownMaster extends PluginBase implements Listener{
                 continue;
             }
             $countdown->onActivate($event->getEntity(), $event);
+        }
+    }
+
+    public function onPlace(BlockPlaceEvent $event) : void
+    {
+        if ($event->isCancelled()) return;
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
+            if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
+                if ($countdown->isCancelEvent()) {
+                    $event->cancel();
+                    $event->getPlayer()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+                }
+                continue;
+            }
+            $countdown->onActivate($event->getPlayer(), $event);
+        }
+    }
+
+    public function onBreak(BlockBreakEvent $event) : void
+    {
+        if ($event->isCancelled()) return;
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
+            if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
+                if ($countdown->isCancelEvent()) {
+                    $event->cancel();
+                    $event->getPlayer()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+                }
+                continue;
+            }
+            $countdown->onActivate($event->getPlayer(), $event);
+        }
+    }
+
+    public function onEat(PlayerItemConsumeEvent $event) : void
+    {
+        if ($event->isCancelled()) return;
+        foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
+            if ($this->getSession($event->getPlayer()->getName())?->hasCountdown($countdown->getName())){
+                if ($countdown->isCancelEvent()) {
+                    $event->cancel();
+                    $event->getPlayer()->sendMessage(TextFormat::RED . "You are still on countdown for " . TextFormat::GOLD . $countdown->getName() . TextFormat::RED . " for another " . $this->getSession($event->getPlayer()->getName())?->getCountdown($countdown->getName()));
+                }
+                continue;
+            }
+            $countdown->onActivate($event->getPlayer(), $event);
         }
     }
 }
