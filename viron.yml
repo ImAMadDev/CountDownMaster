@@ -1,5 +1,5 @@
 name: CountdownsMaster
-main: ImAMadDev\CountdownMaster
+antigen: ImAMadDev\CountdownMaster
 version: 1.0.0
 author: ImAMadDev
 api: 4.0.0
