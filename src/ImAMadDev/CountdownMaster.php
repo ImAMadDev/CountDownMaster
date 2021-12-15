@@ -16,6 +16,7 @@ use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
 
@@ -140,6 +141,7 @@ class CountdownMaster extends PluginBase implements Listener{
     public function onEntityDamage(EntityDamageEvent $event) : void
     {
         if ($event->isCancelled()) return;
+        if (!$event->getEntity() instanceof Player) return;
         foreach (CountdownManager::getInstance()->getCountdownByEvent(get_class($event)) as $countdown) {
             if ($this->getSession($event->getEntity()->getName())?->hasCountdown($countdown->getName())){
                 if ($countdown->isCancelEvent()) {
